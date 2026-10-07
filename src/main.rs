@@ -1,6 +1,6 @@
 use anyhow::{Context, Result};
 use crossterm::{
-    event::{self, Event, KeyCode, KeyEvent, KeyModifiers},
+    event::{self, Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers},
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
@@ -461,6 +461,9 @@ fn run(terminal: &mut Terminal<ratatui::backend::CrosstermBackend<io::Stdout>>) 
         terminal.draw(|f| draw(f, &app))?;
         if event::poll(Duration::from_millis(150))? {
             if let Event::Key(key) = event::read()? {
+                if key.kind != KeyEventKind::Press {
+                    continue;
+                }
                 if app.handle_key(key) { break; }
             }
         }
